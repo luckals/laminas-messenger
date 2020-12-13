@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TMV\Laminas\Messenger\Test\Factory\Middleware;
 
+use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use TMV\Laminas\Messenger\Exception\InvalidArgumentException;
