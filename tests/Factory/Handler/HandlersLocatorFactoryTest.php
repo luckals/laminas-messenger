@@ -17,27 +17,8 @@ class HandlersLocatorFactoryTest extends TestCase
     {
         $factory = new HandlersLocatorFactory('bus_name');
 
-        $container = $this->prophesize(ContainerInterface::class);
-        $container->has('config')->willReturn(true);
-        $container->get('config')->willReturn([
-            'messenger' => [
-                'buses' => [
-                    'bus_name' => [
-                        'handlers' => [
-                            'foo' => [
-                                'handler1',
-                                static function () {
-                                },
-                                new HandlerDescriptor(static function () {
-                                }),
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ]);
-        /** @var HandlersLocator $service */
-        $service = $factory($container->reveal());
+        $container = $this->createStub(ContainerInterface::class);
+        $service = $factory($container);
 
         $this->assertInstanceOf(HandlersLocatorInterface::class, $service);
     }

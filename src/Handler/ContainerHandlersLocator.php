@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TMV\Laminas\Messenger\Handler;
 
+use Symfony\Component\Messenger\Stamp\BusNameStamp;
 use function class_implements;
 use function class_parents;
 use function get_class;
@@ -22,24 +23,21 @@ final class ContainerHandlersLocator implements HandlersLocatorInterface
     /** @var ContainerInterface */
     private $container;
 
-    /** @var string[][]|array<string, array<string|callable>>> */
-    private $handlers;
-
     /**
      * @param ContainerInterface $container
-     * @param string[][]|array<string, array<string|callable>> $handlers
      */
-    public function __construct(ContainerInterface $container, array $handlers)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->handlers = $handlers;
     }
 
     public function getHandlers(Envelope $envelope): iterable
     {
+        $handlers = $this->getHandlersFromConfig($envelope);
         $seen = [];
+
         foreach (self::listTypes($envelope) as $type) {
-            foreach ($this->handlers[$type] ?? [] as $handlerDescriptor) {
+            foreach ($handlers[$type] ?? [] as $handlerDescriptor) {
                 if (is_callable($handlerDescriptor)) {
                     /** @psalm-suppress PossiblyInvalidArgument */
                     $handlerDescriptor = new HandlerDescriptor($handlerDescriptor);
@@ -62,6 +60,22 @@ final class ContainerHandlersLocator implements HandlersLocatorInterface
                 yield $handlerDescriptor;
             }
         }
+    }
+
+    /**
+     * @param Envelope $envelope
+     * @return string[][]|array<string, array<string|callable>>
+     */
+    private function getHandlersFromConfig(Envelope $envelope): array
+    {
+        /** @var BusNameStamp $busNameStamp */
+        $busNameStamp = $envelope->last(BusNameStamp::class);
+        $busName = $busNameStamp ? $busNameStamp->getBusName() : 'messenger.bus.default';
+
+        /** @var array<string, mixed> $config */
+        $config = $this->container->has('config') ? $this->container->get('config') : [];
+        /** @var string[][]|array<string, array<string|callable>> $handlerDescriptors */
+        return $config['messenger']['buses'][$busName]['handlers'] ?? [];
     }
 
     /**

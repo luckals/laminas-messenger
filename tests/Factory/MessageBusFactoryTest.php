@@ -7,6 +7,7 @@ namespace TMV\Laminas\Messenger\Test\Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use TMV\Laminas\Messenger\Exception\InvalidArgumentException;
@@ -30,6 +31,8 @@ class MessageBusFactoryTest extends TestCase
                 ],
             ],
         ]);
+
+        $container->get(HandlersLocator::class)->willReturn($this->createStub(HandlersLocator::class));
 
         $eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
         $middleware = $this->prophesize(MiddlewareInterface::class);

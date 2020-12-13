@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace TMV\Laminas\Messenger\Factory\Middleware;
 
+use Symfony\Component\Messenger\Handler\HandlersLocator;
 use function array_key_exists;
 use Psr\Container\ContainerInterface;
 use function sprintf;
 use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 use TMV\Laminas\Messenger\Exception\InvalidArgumentException;
-use TMV\Laminas\Messenger\Factory\Handler\HandlersLocatorFactory;
 
 final class HandleMessageMiddlewareFactory
 {
@@ -29,7 +29,7 @@ final class HandleMessageMiddlewareFactory
         $logger = $config['messenger']['logger'] ?? null;
         $allowNoHandlers = (bool) ($config['messenger']['buses'][$this->busName]['allow_no_handler'] ?? false);
 
-        $handlersLocator = (new HandlersLocatorFactory($this->busName))($container);
+        $handlersLocator = $container->get(HandlersLocator::class);
         $middleware = new HandleMessageMiddleware($handlersLocator, $allowNoHandlers);
 
         if ($logger !== null) {

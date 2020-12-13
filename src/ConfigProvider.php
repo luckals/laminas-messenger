@@ -6,6 +6,7 @@ namespace TMV\Laminas\Messenger;
 
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Symfony\Component\Messenger as SFMessenger;
+use TMV\Laminas\Messenger\Factory\Handler\HandlersLocatorFactory;
 
 class ConfigProvider
 {
@@ -42,6 +43,7 @@ class ConfigProvider
                 SFMessenger\Command\FailedMessagesRetryCommand::class => Factory\Command\FailedMessagesRetryCommandFactory::class,
                 SFMessenger\Command\FailedMessagesShowCommand::class => Factory\Command\FailedMessagesShowCommandFactory::class,
                 'messenger.bus.default' => [Factory\MessageBusFactory::class, 'messenger.bus.default'],
+                SFMessenger\Handler\HandlersLocator::class => HandlersLocatorFactory::class,
                 'messenger.event_dispatcher' => Factory\EventDispatcherFactory::class,
                 'messenger.routable_message_bus' => [Factory\RoutableMessageBusFactory::class, 'messenger.bus.default'],
                 'messenger.retry_strategy_locator' => Factory\Retry\RetryStrategyLocatorFactory::class,

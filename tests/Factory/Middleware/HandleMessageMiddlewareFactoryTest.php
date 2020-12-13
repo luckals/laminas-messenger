@@ -7,6 +7,7 @@ namespace TMV\Laminas\Messenger\Test\Factory\Middleware;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 use TMV\Laminas\Messenger\Exception\InvalidArgumentException;
 use TMV\Laminas\Messenger\Factory\Middleware\HandleMessageMiddlewareFactory;
@@ -26,6 +27,8 @@ class HandleMessageMiddlewareFactoryTest extends TestCase
             ],
         ]);
 
+        $container->get(HandlersLocator::class)->willReturn($this->createStub(HandlersLocator::class));
+
         $logger = $this->prophesize(LoggerInterface::class);
 
         $container->get('messenger.logger')
@@ -42,6 +45,9 @@ class HandleMessageMiddlewareFactoryTest extends TestCase
         $factory = [HandleMessageMiddlewareFactory::class, 'bus_name'];
 
         $container = $this->prophesize(ContainerInterface::class);
+        $container->has('config')->willReturn(true);
+        $container->get('config')->willReturn([]);
+        $container->get(HandlersLocator::class)->willReturn($this->createMock(HandlersLocator::class));
 
         $service = $factory($container->reveal());
 
